@@ -1,3 +1,10 @@
-Earliest versions of this project involved simulating Jool and it's Moons from Kerbal Space Program. Each version attempted to improve readability and general form.
+Multibody Joolian Simulation:
+- Earliest versions of this project involved simulating Jool and it's Moons from Kerbal Space Program. Each version attempted to improve readability and general form.
+- V1 established general form, calculation of initial conditions, and the core simulation loop
 - V2 attempted to render the video alongside the simulation, each time a new timestep was simulated a new frame would be rendered
 - V3 was the final version of this Joolian simulation before moving onto entire solar system simulation
+
+Multibody Kerbol Simulation
+- Built upon previous simulation with emphasis on scalability, making indexes consistent (ie. all arrays are same lenght with each index referring to same body)
+Version 1:
+- Cleaned up Preallocation
