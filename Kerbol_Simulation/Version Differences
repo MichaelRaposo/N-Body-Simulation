@@ -9,3 +9,4 @@ Version 1:
 - Made various simulation constants seperate variables for ease of changes
 - Cleaned up figure setup
 - The trajectory and labels of moons (satelites) will not render until its distance from parent body is greater than SOI (i.e. it has left parent bodies SOI)
+- Added progress tracker for longer simulations
