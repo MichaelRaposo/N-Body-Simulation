@@ -264,9 +264,9 @@ hold off;
 
 % Functions
 function eccentric_anomaly = KTE(ecc, mna) % Iterative Method for Solving KTE
-    guess_mtx = zeros(1:5); % Preallocation
+    guess_mtx = zeros(1:10); % Preallocation
     guess_mtx(1,1) = mna; % Mean Anomaly
-    for i = 1:4
+    for i = 1:9
         guess_mtx(1, i+1) = guess_mtx(1, i) - (guess_mtx(1, i) - ecc * sin(guess_mtx(1, i)) - guess_mtx(1, 1)) / (1 - ecc * guess_mtx(1, i));
     end
     eccentric_anomaly = guess_mtx(1,10); % Output Eccentric Anomaly (radians)
