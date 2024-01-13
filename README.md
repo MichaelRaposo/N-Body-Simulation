@@ -1,6 +1,12 @@
 # N-Body Simulation of Celestial Bodies
 ## Multibody Jool Simulation
-### Version 1 Notes
+Earliest versions of this project involved simulating Jool and it's Moons from Kerbal Space Program. Each version attempted to improve readability and general form.
+### Version Notes
+- V1 established general form, calculation of initial conditions, and the core simulation loop
+- V2 attempted to render the video alongside the simulation, each time a new timestep was simulated a new frame would be rendered
+- V3 was the final version of this Joolian simulation before moving onto entire solar system simulation
+
+v=https://www.youtube.com/watch?v=R7MJvFjdgdw
 
 ## Multibody Kerbol Simulation
 Built upon Multibody Jool Simulation with emphasis on scalability and fixing form issues
