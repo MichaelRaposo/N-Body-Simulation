@@ -6,7 +6,7 @@ Earliest versions of this project involved simulating Jool and it's Moons from K
 - V2 attempted to render the video alongside the simulation, each time a new timestep was simulated a new frame would be rendered
 - V3 was the final version of this Joolian simulation before moving onto entire solar system simulation
 
-[![Test](https://img.youtube.com/vi/R7MJvFjdgdw/0.jpg)](https://www.youtube.com/watch?v=R7MJvFjdgdw)
+[![Animation of Simulation](https://img.youtube.com/vi/R7MJvFjdgdw/0.jpg)](https://www.youtube.com/watch?v=R7MJvFjdgdw)
 
 ## Multibody Kerbol Simulation
 Built upon Multibody Jool Simulation with emphasis on scalability and fixing form issues
