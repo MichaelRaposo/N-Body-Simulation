@@ -101,12 +101,12 @@ traj_points = 2500000; % Position/velocity stored at once
 
 % Position Matrix Preallocation
 for i = 1:num_bodies
-    planet_position{i} = zeros(length(traj_points), 3);
+    planet_position{i} = zeros(traj_points, 3);
 end
 
 % Velocity Matrix Preallocation
 for i = 1:num_bodies
-    planet_velocity{i} = zeros(length(traj_points), 3);
+    planet_velocity{i} = zeros(traj_points, 3);
 end
 
 % Initial Position and Velocity in KoCI (Kerbol Centered Inertial)
