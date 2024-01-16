@@ -26,7 +26,11 @@ Built upon Multibody Jool Simulation with emphasis on scalability and fixing for
 - Greatly improved runtime
 
 ### Version 3 Notes
+- Combined simulation loop and rendering loop
+- Discards position and velocity values after the simulation animation exceeds them
+- Decreases total RAM use to accomodate longer simulations that exceed RAM capacity of computer
 
+[![Animation of Simulation](https://img.youtube.com/watch?v=Etp9jJn_wWM/0.jpg)](https://www.youtube.com/watch?v=Etp9jJn_wWM)
 
 ## Multibody Solar System Simulation
 ### Version 1 Notes
