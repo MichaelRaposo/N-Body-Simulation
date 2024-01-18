@@ -159,9 +159,13 @@ ylabel(ax2, 'Y Position (meters)');
 grid(ax2, 'on');
 
 % Simulation Loop
+RAM_max = false;
 for t = 1:length(sim_time) 
     force_array = cell(num_bodies,num_bodies); 
-    k = find(planet_position{i}(:,1),1,'last');
+    if t == traj_points
+        k = traj_points;
+        RAM_max = true;
+    end
     if mod(t,sim_percent)==0
         disp('Progress: ' + string(round((100*t)/length(sim_time),2))+'%'); % Displays current progress
     end
@@ -169,9 +173,15 @@ for t = 1:length(sim_time)
         for j = i:num_bodies % Interacting Body
             if i ~= j % Ignores interaction between current body and itself
                 % Force vector calculation
-                force_ij_mag = (G*body_prop{i}(1, 2)*body_prop{j}(1, 2)) / (norm(planet_position{j}(k, :) - planet_position{i}(k, :))^2);
-                force_ij_vect = force_ij_mag * ((planet_position{j}(k, :) - planet_position{i}(k, :)) / norm(planet_position{j}(k, :) - planet_position{i}(k, :)));
-                force_array{i,j} = force_ij_vect;
+                if planet_velocity{i}(end, :) == [0,0,0]
+                    force_ij_mag = (G*body_prop{i}(1, 2)*body_prop{j}(1, 2)) / (norm(planet_position{j}(t, :) - planet_position{i}(t, :))^2);
+                    force_ij_vect = force_ij_mag * ((planet_position{j}(t, :) - planet_position{i}(t, :)) / norm(planet_position{j}(t, :) - planet_position{i}(t, :)));
+                    force_array{i,j} = force_ij_vect;
+                else
+                    force_ij_mag = (G*body_prop{i}(1, 2)*body_prop{j}(1, 2)) / (norm(planet_position{j}(end, :) - planet_position{i}(end, :))^2);
+                    force_ij_vect = force_ij_mag * ((planet_position{j}(end, :) - planet_position{i}(end, :)) / norm(planet_position{j}(end, :) - planet_position{i}(end, :)));
+                    force_array{i,j} = force_ij_vect;
+                end
             end
         end
     end
@@ -187,8 +197,8 @@ for t = 1:length(sim_time)
             total_force_vect = total_force_vect + force_array{i,j};
         end
         a_i = total_force_vect / body_prop{i}(1, 2);
-
-        if k < traj_points
+        
+        if planet_velocity{i}(end, :) == [0,0,0]
             planet_velocity{i}(t+1, :) = planet_velocity{i}(t, :) + a_i;
             planet_position{i}(t+1, :) = planet_position{i}(t, :) + planet_velocity{i}(t, :);
         else
@@ -241,12 +251,23 @@ for t = 1:length(sim_time)
                     planetMarkers2(i) = plot(ax2, planet_position{i}(traj_points, 3), planet_position{i}(traj_points, 2), 'o', 'MarkerSize', 5, 'Color', planet_colors(i, :), 'MarkerFaceColor', 'none');
                     %planetLabels2(i) = text(ax2, planet_position{i}(traj_points, 3), planet_position{i}(traj_points, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
                 end
-            elseif norm(planet_position{i}(k,:) - planet_position{orbits{i}(1,1)}(k,:)) > body_prop{orbits{i}(1,1)}(1,4)
+
+            elseif RAM_max == true
+                if norm(planet_position{i}(k,:) - planet_position{orbits{i}(1,1)}(k,:)) > body_prop{orbits{i}(1,1)}(1,4)
                     xlim(ax1, [planet_position{1}(k, 1) - 1.2e11, planet_position{1}(k, 1) + 1.2e11]);
                     ylim(ax1, [planet_position{1}(k, 2) - 1.2e11, planet_position{1}(k, 2) + 1.2e11]);
 
                     xlim(ax2, [planet_position{1}(k, 3) - 0.42e11, planet_position{1}(k, 3) + 0.42e11]);
                     ylim(ax2, [planet_position{1}(k, 2) - 1.2e11, planet_position{1}(k, 2) + 1.2e11]);
+                end
+            elseif RAM_max == false
+                if norm(planet_position{i}(t,:) - planet_position{orbits{i}(1,1)}(t,:)) > body_prop{orbits{i}(1,1)}(1,4)
+                    xlim(ax1, [planet_position{1}(t, 1) - 1.2e11, planet_position{1}(t, 1) + 1.2e11]);
+                    ylim(ax1, [planet_position{1}(t, 2) - 1.2e11, planet_position{1}(t, 2) + 1.2e11]);
+
+                    xlim(ax2, [planet_position{1}(t, 3) - 0.42e11, planet_position{1}(t, 3) + 0.42e11]);
+                    ylim(ax2, [planet_position{1}(t, 2) - 1.2e11, planet_position{1}(t, 2) + 1.2e11]);
+                end
             end
         end
         timeCounter = annotation('textbox', [0, 0, 1, 0.05], 'String', ['Time: ' num2str(t) ' s elapsed'], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom', 'FontSize', 12, 'BackgroundColor', 'w');
