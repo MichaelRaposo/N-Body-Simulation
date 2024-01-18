@@ -95,9 +95,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simulation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-sim_time = linspace(0, 50000, 50001); % Simulation length in seconds
+sim_time = linspace(0, 15000000, 15000001); % Simulation length in seconds
 sim_percent = (length(sim_time)-1)/1000; % Simulation percentage constant
-traj_points = 10000; % Position/velocity stored at once
+traj_points = 2500000; % Position/velocity stored at once
 
 % Position Matrix Preallocation
 for i = 1:num_bodies
@@ -161,6 +161,7 @@ grid(ax2, 'on');
 % Simulation Loop
 for t = 1:length(sim_time) 
     force_array = cell(num_bodies,num_bodies); 
+    k = find(planet_position{i}(:,1),1,'last');
     if mod(t,sim_percent)==0
         disp('Progress: ' + string(round((100*t)/length(sim_time),2))+'%'); % Displays current progress
     end
@@ -168,15 +169,9 @@ for t = 1:length(sim_time)
         for j = i:num_bodies % Interacting Body
             if i ~= j % Ignores interaction between current body and itself
                 % Force vector calculation
-                if planet_velocity{i}(end, :) == [0,0,0]
-                    force_ij_mag = (G*body_prop{i}(1, 2)*body_prop{j}(1, 2)) / (norm(planet_position{j}(t, :) - planet_position{i}(t, :))^2);
-                    force_ij_vect = force_ij_mag * ((planet_position{j}(t, :) - planet_position{i}(t, :)) / norm(planet_position{j}(t, :) - planet_position{i}(t, :)));
-                    force_array{i,j} = force_ij_vect;
-                else
-                    force_ij_mag = (G*body_prop{i}(1, 2)*body_prop{j}(1, 2)) / (norm(planet_position{j}(end, :) - planet_position{i}(end, :))^2);
-                    force_ij_vect = force_ij_mag * ((planet_position{j}(end, :) - planet_position{i}(end, :)) / norm(planet_position{j}(end, :) - planet_position{i}(end, :)));
-                    force_array{i,j} = force_ij_vect;
-                end
+                force_ij_mag = (G*body_prop{i}(1, 2)*body_prop{j}(1, 2)) / (norm(planet_position{j}(k, :) - planet_position{i}(k, :))^2);
+                force_ij_vect = force_ij_mag * ((planet_position{j}(k, :) - planet_position{i}(k, :)) / norm(planet_position{j}(k, :) - planet_position{i}(k, :)));
+                force_array{i,j} = force_ij_vect;
             end
         end
     end
@@ -192,15 +187,13 @@ for t = 1:length(sim_time)
             total_force_vect = total_force_vect + force_array{i,j};
         end
         a_i = total_force_vect / body_prop{i}(1, 2);
-        if planet_velocity{i}(end, :) == [0,0,0]
+
+        if k < traj_points
             planet_velocity{i}(t+1, :) = planet_velocity{i}(t, :) + a_i;
             planet_position{i}(t+1, :) = planet_position{i}(t, :) + planet_velocity{i}(t, :);
         else
-
             planet_velocity{i}(1:end-1, :) = planet_velocity{i}(2:end, :);
             planet_position{i}(1:end-1, :) = planet_position{i}(2:end, :);
-            planet_velocity{i}(traj_points, :) = [0,0,0];
-            planet_position{i}(traj_points, :) = [0,0,0];
             planet_velocity{i}(end, :) = planet_velocity{i}(end-1, :) + a_i;
             planet_position{i}(end, :) = planet_position{i}(end-1, :) + planet_velocity{i}(end, :);
         end
@@ -234,54 +227,26 @@ for t = 1:length(sim_time)
                 end
               
                 if planet_velocity{i}(end, :) == [0,0,0]
-                    %disp('Condition 1')
                     planetTrajectories(i) = plot(ax1, planet_position{i}(1:10:t, 1), planet_position{i}(1:10:t, 2), 'LineWidth', 1, 'Color', planet_colors(i, :));
                     planetTrajectories2(i) = plot(ax2, planet_position{i}(1:10:t, 3), planet_position{i}(1:10:t, 2), 'LineWidth', 1, 'Color', planet_colors(i, :));
                     planetMarkers(i) = plot(ax1, planet_position{i}(t, 1), planet_position{i}(t, 2), 'o', 'MarkerSize', 5, 'Color', planet_colors(i, :), 'MarkerFaceColor', 'none');
                     planetLabels(i) = text(ax1, planet_position{i}(t, 1), planet_position{i}(t, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
                     planetMarkers2(i) = plot(ax2, planet_position{i}(t, 3), planet_position{i}(t, 2), 'o', 'MarkerSize', 5, 'Color', planet_colors(i, :), 'MarkerFaceColor', 'none');
-                    planetLabels2(i) = text(ax2, planet_position{i}(t, 3), planet_position{i}(t, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
-                else
-                    %disp('Condition 2')
-                    planetTrajectories(i) = plot(ax1, planet_position{i}(1:10:traj_points, 1), planet_position{i}(1:10:traj_points, 2), 'LineWidth', 1, 'Color', planet_colors(i, :));
-                    planetTrajectories2(i) = plot(ax2, planet_position{i}(1:10:traj_points, 3), planet_position{i}(1:10:traj_points, 2), 'LineWidth', 1, 'Color', planet_colors(i, :));
-                    planetMarkers(i) = plot(ax1, planet_position{i}(traj_points, 1), planet_position{i}(traj_points, 2), 'o', 'MarkerSize', 5, 'Color', planet_colors(i, :), 'MarkerFaceColor', 'none');
-                    planetLabels(i) = text(ax1, planet_position{i}(traj_points, 1), planet_position{i}(traj_points, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
-                    planetMarkers2(i) = plot(ax2, planet_position{i}(traj_points, 3), planet_position{i}(traj_points, 2), 'o', 'MarkerSize', 5, 'Color', planet_colors(i, :), 'MarkerFaceColor', 'none');
-                    planetLabels2(i) = text(ax2, planet_position{i}(traj_points, 3), planet_position{i}(traj_points, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
-                end
-                disp(size(planet_position{i},1))
-
-            elseif norm(planet_position{i}(t,:) - planet_position{orbits{i}(1,1)}(t,:)) > body_prop{orbits{i}(1,1)}(1,4) || norm(planet_position{i}(traj_points,:) - planet_position{orbits{i}(1,1)}(traj_points,:)) > body_prop{orbits{i}(1,1)}(1,4)
-                if planet_velocity{i}(end, :) == [0,0,0]
-                    xlim(ax1, [planet_position{1}(t, 1) - 1.2e11, planet_position{1}(t, 1) + 1.2e11]);
-                    ylim(ax1, [planet_position{1}(t, 2) - 1.2e11, planet_position{1}(t, 2) + 1.2e11]);
-
-                    xlim(ax2, [planet_position{1}(t, 3) - 0.42e11, planet_position{1}(t, 3) + 0.42e11]);
-                    ylim(ax2, [planet_position{1}(t, 2) - 1.2e11, planet_position{1}(t, 2) + 1.2e11]);
-                else
-                    xlim(ax1, [planet_position{1}(traj_points, 1) - 1.2e11, planet_position{1}(traj_points, 1) + 1.2e11]);
-                    ylim(ax1, [planet_position{1}(traj_points, 2) - 1.2e11, planet_position{1}(traj_points, 2) + 1.2e11]);
-
-                    xlim(ax2, [planet_position{1}(traj_points, 3) - 0.42e11, planet_position{1}(traj_points, 3) + 0.42e11]);
-                    ylim(ax2, [planet_position{1}(traj_points, 2) - 1.2e11, planet_position{1}(traj_points, 2) + 1.2e11]);
-                end
-
-                if planet_velocity{i}(end, :) == [0,0,0]
-                    planetTrajectories(i) = plot(ax1, planet_position{i}(1:10:t, 1), planet_position{i}(1:10:t, 2), 'LineWidth', 1, 'Color', planet_colors(i, :));
-                    planetTrajectories2(i) = plot(ax2, planet_position{i}(1:10:t, 3), planet_position{i}(1:10:t, 2), 'LineWidth', 1, 'Color', planet_colors(i, :));
-                    planetMarkers(i) = plot(ax1, planet_position{i}(t, 1), planet_position{i}(t, 2), 'o', 'MarkerSize', 5, 'Color', planet_colors(i, :), 'MarkerFaceColor', 'none');
-                    planetLabels(i) = text(ax1, planet_position{i}(t, 1), planet_position{i}(t, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
-                    planetMarkers2(i) = plot(ax2, planet_position{i}(t, 3), planet_position{i}(t, 2), 'o', 'MarkerSize', 5, 'Color', planet_colors(i, :), 'MarkerFaceColor', 'none');
-                    planetLabels2(i) = text(ax2, planet_position{i}(t, 3), planet_position{i}(t, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
+                    %planetLabels2(i) = text(ax2, planet_position{i}(t, 3), planet_position{i}(t, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
                 else
                     planetTrajectories(i) = plot(ax1, planet_position{i}(1:10:traj_points, 1), planet_position{i}(1:10:traj_points, 2), 'LineWidth', 1, 'Color', planet_colors(i, :));
                     planetTrajectories2(i) = plot(ax2, planet_position{i}(1:10:traj_points, 3), planet_position{i}(1:10:traj_points, 2), 'LineWidth', 1, 'Color', planet_colors(i, :));
                     planetMarkers(i) = plot(ax1, planet_position{i}(traj_points, 1), planet_position{i}(traj_points, 2), 'o', 'MarkerSize', 5, 'Color', planet_colors(i, :), 'MarkerFaceColor', 'none');
                     planetLabels(i) = text(ax1, planet_position{i}(traj_points, 1), planet_position{i}(traj_points, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
                     planetMarkers2(i) = plot(ax2, planet_position{i}(traj_points, 3), planet_position{i}(traj_points, 2), 'o', 'MarkerSize', 5, 'Color', planet_colors(i, :), 'MarkerFaceColor', 'none');
-                    planetLabels2(i) = text(ax2, planet_position{i}(traj_points, 3), planet_position{i}(traj_points, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
+                    %planetLabels2(i) = text(ax2, planet_position{i}(traj_points, 3), planet_position{i}(traj_points, 2), body_names{i},'Color', planet_colors(i, :), 'FontSize', 8, 'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
                 end
+            elseif norm(planet_position{i}(k,:) - planet_position{orbits{i}(1,1)}(k,:)) > body_prop{orbits{i}(1,1)}(1,4)
+                    xlim(ax1, [planet_position{1}(k, 1) - 1.2e11, planet_position{1}(k, 1) + 1.2e11]);
+                    ylim(ax1, [planet_position{1}(k, 2) - 1.2e11, planet_position{1}(k, 2) + 1.2e11]);
+
+                    xlim(ax2, [planet_position{1}(k, 3) - 0.42e11, planet_position{1}(k, 3) + 0.42e11]);
+                    ylim(ax2, [planet_position{1}(k, 2) - 1.2e11, planet_position{1}(k, 2) + 1.2e11]);
             end
         end
         timeCounter = annotation('textbox', [0, 0, 1, 0.05], 'String', ['Time: ' num2str(t) ' s elapsed'], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom', 'FontSize', 12, 'BackgroundColor', 'w');
