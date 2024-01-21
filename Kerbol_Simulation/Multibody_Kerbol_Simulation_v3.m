@@ -97,7 +97,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simulation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-sim_time = linspace(0, 18000000, 18000001); % Simulation length in seconds
+sim_time = linspace(0, 64000000, 64000001); % Simulation length in seconds
 sim_percent = (length(sim_time)-1)/1000; % Simulation percentage constant
 traj_points = 2000000; % Position/velocity stored at once
 
@@ -131,7 +131,7 @@ tl.OuterPosition = figureSize;              % Sets figure to specified size
 movieFileName = 'Kerbol_System_Simulation3.mp4';    % Output file name
 movieWriter = VideoWriter(movieFileName, 'MPEG-4'); % Defines movieWriter
 movieWriter.FrameRate = 60;                         % Set the desired frame rate
-spf = 2500;                                         % Seconds simulated per frame
+spf = 8000;                                         % Seconds simulated per frame
 open(movieWriter);                                  % Opens movieWriter
 
 % In-Plane Plot (Tile 1)
