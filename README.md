@@ -38,4 +38,4 @@ Built upon Multibody Jool Simulation with emphasis on scalability and fixing for
 - Accesses Horizons API the moment the simulation is to source initial conditions
 - Changed tiling style to show inner and outer planets seperately due to scale difference of their orbits
 
-[![Animation of Simulation](https://img.youtube/r3YPvWTmCWQ/0.jpg)](https://youtu.be/r3YPvWTmCWQ)
+[![Animation of Simulation](https://img.youtube.com/vi/r3YPvWTmCWQ/0.jpg)](https://www.youtube.com/watch?v=r3YPvWTmCWQ)
