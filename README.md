@@ -34,3 +34,8 @@ Built upon Multibody Jool Simulation with emphasis on scalability and fixing for
 
 ## Multibody Solar System Simulation
 ### Version 1 Notes
+- Models 30 bodies including Sun, Mercury, Venus, Earth, Mars, Ceres, Vesta, Jupiter, Saturn, Uranus, Neptune, and Pluto as well as any major moons
+- Accesses Horizons API the moment the simulation is to source initial conditions
+- Changed tiling style to show inner and outer planets seperately due to scale difference of their orbits
+
+[![Animation of Simulation](https://img.youtube/r3YPvWTmCWQ.jpg)](https://youtu.be/r3YPvWTmCWQ)
